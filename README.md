@@ -1,53 +1,37 @@
-# Shadowsocks + v2ray-plugin + Caddy Installer
+# VLESS + Reality + XTLS Vision Installer
 
-A one-command installer that sets up a [Shadowsocks](https://shadowsocks.org/) proxy with [v2ray-plugin](https://github.com/shadowsocks/v2ray-plugin) websocket transport and a [Caddy](https://caddyserver.com/) reverse proxy on a fresh Ubuntu server.
-
-Traffic is disguised as regular HTTPS to a normal website, making it resistant to deep packet inspection and active probing.
+A one-command installer for [xray-core](https://github.com/XTLS/Xray-core) with VLESS + Reality + XTLS Vision on a fresh Ubuntu server. Designed to bypass deep packet inspection. No domain or TLS certificate required — connect by server IP.
 
 ## How It Works
 
 ```
-Client ──TLS──▶ Caddy (:443) ──websocket──▶ ssserver (localhost)
-Browser ──TLS──▶ Caddy (:443) ──▶ static decoy page
+Client ──Reality TLS──▶ Xray (:443) ──VLESS──▶ Internet
+Probe  ──TLS hello──▶  Xray (:443) ──forward──▶ www.microsoft.com (real cert)
 ```
 
-- **Caddy** listens on port 443, terminates TLS (automatic Let's Encrypt), and serves a static "Under Construction" page to regular visitors.
-- Requests to a secret randomized websocket path are proxied to **ssserver** on localhost.
-- **ssserver** (shadowsocks-rust) handles the SOCKS5 proxy with the `chacha20-ietf-poly1305` cipher (Shadowsocks 2022 protocol).
-- **v2ray-plugin** provides the websocket transport layer between client and server.
-
-Anyone inspecting the server sees a valid HTTPS website. The proxy traffic blends in as normal websocket connections.
+- Xray listens on port 443 and performs a Reality TLS handshake, impersonating www.microsoft.com.
+- Only clients with the correct UUID, public key, and short ID can authenticate.
+- Active probes are forwarded to the real microsoft.com and see its real TLS certificate.
+- XTLS Vision flow prevents length-based traffic analysis.
+- No domain or TLS certificate required — connect by server IP.
 
 ## Prerequisites
 
-- A fresh **Ubuntu 22.04 or 24.04** server (x86_64 or aarch64)
-- A **domain name** with a DNS A record already pointing to the server's IP
+- Fresh **Ubuntu 22.04 or 24.04** (x86_64 or aarch64)
 - **Root access**
-- Ports **80** and **443** must be open and not in use (Caddy needs both for ACME certificate issuance)
+- Port **443** must be open and not in use
+- **No domain required**
 
 ## Installation
 
-### 1. Point your domain to the server
-
-Create a DNS A record for your domain (e.g., `proxy.example.com`) pointing to your server's public IP address. Wait for DNS propagation (usually a few minutes).
-
-Verify it resolves correctly:
-
-```bash
-dig +short proxy.example.com
-# Should return your server's IP
-```
-
-### 2. Run the installer
-
-The quickest way — run it directly on the server without downloading anything first:
+One-liner:
 
 ```bash
 ssh root@your-server
 bash <(curl -fsSL https://raw.githubusercontent.com/ashep/vpn-installer/main/install.sh)
 ```
 
-Alternatively, download and run it in two steps:
+Or download and run:
 
 ```bash
 scp install.sh root@your-server:~
@@ -55,198 +39,162 @@ ssh root@your-server
 bash install.sh
 ```
 
-The script will:
+What the script does:
 
-1. Ask for your domain name
-2. Install dependencies and Caddy
-3. Download the latest shadowsocks-rust and v2ray-plugin from GitHub
-4. Generate a random password, local port, and websocket path
-5. Configure everything and start the services
-6. Print your connection details
+1. Detects architecture
+2. Installs dependencies and downloads latest xray-core
+3. Generates UUID, x25519 keypair, and short ID
+4. Configures VLESS + Reality + XTLS Vision
+5. Starts the xray service
+6. Prints connection details and share link
 
-### 3. Save the output
-
-At the end, the script prints everything you need to configure your client:
+Example output:
 
 ```
 ════════════════════════════════════════════════════════════
-  Shadowsocks + v2ray-plugin setup complete
+  VLESS + Reality + XTLS Vision setup complete
 ════════════════════════════════════════════════════════════
 
-  Server:       proxy.example.com
+  Server:       203.0.113.1
   Port:         443
-  Password:     <random base64 string>
-  Cipher:       chacha20-ietf-poly1305
-  Plugin:       v2ray-plugin
-  Plugin opts:  tls;host=proxy.example.com;path=/ws-<random>
+  Protocol:     VLESS
+  UUID:         <random uuid>
+  Flow:         xtls-rprx-vision
+  Security:     Reality
+  SNI:          www.microsoft.com
+  Public Key:   <random key>
+  Short ID:     <random hex>
+  Fingerprint:  chrome
 
-  ss:// URI (for client import):
-  ss://...@proxy.example.com:443/?plugin=...#proxy.example.com
+  vless:// share link:
+  vless://...
 
 ════════════════════════════════════════════════════════════
 ```
-
-Save this information securely. The password is stored on the server in `/etc/shadowsocks-rust/config.json` (readable only by the `shadowsocks` user).
 
 ## Client Setup
 
-Use the `ss://` URI printed by the installer to import the server into your client. Alternatively, configure it manually with the values from the output.
+Use the `vless://` share link printed by the installer. Most clients can import it directly.
 
-### Shadowsocks clients with v2ray-plugin support
+### Recommended clients
 
 | Platform | Client |
 |----------|--------|
-| Windows | [Shadowsocks for Windows](https://github.com/shadowsocks/shadowsocks-windows) + [v2ray-plugin](https://github.com/shadowsocks/v2ray-plugin/releases) |
-| macOS | [ShadowsocksX-NG](https://github.com/shadowsocks/ShadowsocksX-NG) |
-| Linux | [shadowsocks-rust](https://github.com/shadowsocks/shadowsocks-rust) (`sslocal`) + [v2ray-plugin](https://github.com/shadowsocks/v2ray-plugin/releases) |
-| Android | [Shadowsocks Android](https://github.com/shadowsocks/shadowsocks-android) + [v2ray-plugin Android](https://github.com/nicxlau/nicxlau.github.io/tree/master) |
-| iOS | [Shadowrocket](https://apps.apple.com/app/shadowrocket/id932747118) (paid) or [Potatso Lite](https://apps.apple.com/app/potatso-lite/id1239860606) |
+| iOS | [Streisand](https://apps.apple.com/app/streisand/id6450534064), [Shadowrocket](https://apps.apple.com/app/shadowrocket/id932747118) (paid), [V2Box](https://apps.apple.com/app/v2box-v2ray-client/id6446814690) |
+| Android | [V2rayNG](https://github.com/2dust/v2rayNG), [NekoBox](https://github.com/MatsuriDayo/NekoBoxForAndroid) |
+| Windows | [V2rayN](https://github.com/2dust/v2rayN), [Nekoray](https://github.com/MatsuriDayo/nekoray) |
+| macOS | [V2rayU](https://github.com/yanue/V2rayU), [Nekoray](https://github.com/MatsuriDayo/nekoray) |
+| Linux | [Nekoray](https://github.com/MatsuriDayo/nekoray), or xray-core directly |
 
 ### Manual client configuration
 
-If your client doesn't support `ss://` URI import, enter these settings manually:
+If a client doesn't support share link import, enter these settings manually:
 
 | Field | Value |
 |-------|-------|
-| Server | Your domain (e.g., `proxy.example.com`) |
-| Port | `443` |
-| Password | The password from the installer output |
-| Cipher / Encryption | `chacha20-ietf-poly1305` |
-| Plugin | `v2ray-plugin` |
-| Plugin Options | `tls;host=<your-domain>;path=<your-ws-path>` |
+| Address | Your server IP |
+| Port | 443 |
+| UUID | From installer output |
+| Flow | xtls-rprx-vision |
+| Encryption | none |
+| Network | tcp |
+| Security | reality |
+| SNI | www.microsoft.com |
+| Fingerprint | chrome |
+| Public Key | From installer output |
+| Short ID | From installer output |
 
-### Linux client example (sslocal)
+### Linux command-line example
 
 ```bash
-# Install shadowsocks-rust and v2ray-plugin on your local machine,
-# then create a local config:
-
-cat > ~/ss-local.json <<EOF
+# Install xray-core on your local machine, then create config:
+cat > ~/xray-client.json <<EOF
 {
-    "server": "proxy.example.com",
-    "server_port": 443,
-    "local_address": "127.0.0.1",
-    "local_port": 1080,
-    "password": "YOUR_PASSWORD_HERE",
-    "method": "chacha20-ietf-poly1305",
-    "plugin": "v2ray-plugin",
-    "plugin_opts": "tls;host=proxy.example.com;path=/ws-YOUR_PATH_HERE"
+    "inbounds": [{
+        "listen": "127.0.0.1",
+        "port": 1080,
+        "protocol": "socks"
+    }],
+    "outbounds": [{
+        "protocol": "vless",
+        "settings": {
+            "vnext": [{
+                "address": "YOUR_SERVER_IP",
+                "port": 443,
+                "users": [{
+                    "id": "YOUR_UUID",
+                    "flow": "xtls-rprx-vision",
+                    "encryption": "none"
+                }]
+            }]
+        },
+        "streamSettings": {
+            "network": "tcp",
+            "security": "reality",
+            "realitySettings": {
+                "serverName": "www.microsoft.com",
+                "fingerprint": "chrome",
+                "publicKey": "YOUR_PUBLIC_KEY",
+                "shortId": "YOUR_SHORT_ID"
+            }
+        }
+    }]
 }
 EOF
 
-sslocal -c ~/ss-local.json
+xray run -c ~/xray-client.json
 ```
 
-This starts a local SOCKS5 proxy on `127.0.0.1:1080`. Configure your browser or system to use it.
+This starts a local SOCKS5 proxy on `127.0.0.1:1080`.
 
 ## Server Management
 
 ### Service commands
 
 ```bash
-# Check status
-systemctl status shadowsocks-rust
-systemctl status caddy
-
-# View logs
-journalctl -u shadowsocks-rust -f
-journalctl -u caddy -f
-
-# Restart services
-systemctl restart shadowsocks-rust
-systemctl restart caddy
-
-# Stop services
-systemctl stop shadowsocks-rust
-systemctl stop caddy
+systemctl status xray
+systemctl restart xray
+systemctl stop xray
+journalctl -u xray -f
 ```
 
-### Verifying the server is working
-
-After installation, run these checks on the server to confirm everything is healthy:
+### Verifying the server
 
 ```bash
-# 1. Check that both services are active
-systemctl is-active shadowsocks-rust  # should print "active"
-systemctl is-active caddy              # should print "active"
+# Check service is active
+systemctl is-active xray
 
-# 2. Verify ssserver is listening on the local port
-ss -tlnp | grep ssserver
-# Expected: LISTEN on 127.0.0.1:<your-port>
+# Verify xray is listening on 443
+ss -tlnp | grep xray
 
-# 3. Verify Caddy is listening on 443
-ss -tlnp | grep caddy
-# Expected: LISTEN on *:443 (and *:80 for ACME)
-
-# 4. Test the decoy page (should return your "Under Construction" HTML)
-curl -s https://yourdomain.com | head -5
-
-# 5. Test the websocket path (should return a 502 or connection upgrade, NOT a 404)
-curl -s -o /dev/null -w "%{http_code}" https://yourdomain.com/ws-your-path
-# Expected: 502 (because curl is not a websocket client — 502 means Caddy
-# found the route and tried to proxy it, which is correct. A 404 would
-# mean the path is wrong.)
-
-# 6. Test TLS certificate validity
-curl -vI https://yourdomain.com 2>&1 | grep "subject:"
-# Should show your domain name with a valid Let's Encrypt certificate
+# Test that probes see microsoft.com (from another machine)
+curl -vI --resolve www.microsoft.com:443:YOUR_SERVER_IP https://www.microsoft.com 2>&1 | grep "subject:"
+# Should show Microsoft's real certificate
 ```
-
-Replace `yourdomain.com` and `/ws-your-path` with your actual values from the installer output.
 
 ### Configuration files
 
 | File | Purpose |
 |------|---------|
-| `/etc/shadowsocks-rust/config.json` | Shadowsocks server config (password, port, cipher) |
-| `/etc/caddy/Caddyfile` | Caddy reverse proxy and decoy site config |
-| `/var/www/html/index.html` | Decoy website page |
-| `/etc/systemd/system/shadowsocks-rust.service` | systemd unit for ssserver |
+| `/usr/local/bin/xray` | Xray binary |
+| `/usr/local/etc/xray/config.json` | Server config (UUID, keys) |
+| `/etc/systemd/system/xray.service` | systemd unit |
 
-### Changing the password
+### Updating xray-core
 
-```bash
-# Generate a new random password
-NEW_PASS=$(openssl rand -base64 32)
-echo "New password: $NEW_PASS"
-
-# Edit the config
-nano /etc/shadowsocks-rust/config.json
-# Replace the "password" value
-
-# Restart
-systemctl restart shadowsocks-rust
-```
-
-Update your client with the new password.
-
-### Customizing the decoy page
-
-Edit `/var/www/html/index.html` with any static HTML you like. No restart needed — Caddy serves it directly.
-
-For a more convincing decoy, consider copying a simple template from a real website.
-
-### Updating binaries
-
-To update shadowsocks-rust and v2ray-plugin to the latest versions, re-run the installer. It will download the latest releases and overwrite the existing binaries. The config files will also be regenerated (new password/port/path), so save the new output and update your clients.
+Re-run the installer. It will download the latest version and regenerate credentials.
 
 ## Troubleshooting
 
-### Caddy fails to start / certificate errors
+### Xray won't start
 
-- Verify your domain's DNS A record points to the server: `dig +short yourdomain.com`
-- Make sure ports 80 and 443 are not blocked by a firewall or used by another service: `ss -tlnp | grep -E ':80|:443'`
-- Check Caddy logs: `journalctl -u caddy --no-pager -n 50`
+- Check logs: `journalctl -u xray --no-pager -n 50`
+- Verify config is valid JSON: `jq . /usr/local/etc/xray/config.json`
+- Make sure port 443 is not in use: `ss -tlnp | grep :443`
 
-### Shadowsocks won't start
+### Client connects but no internet
 
-- Check logs: `journalctl -u shadowsocks-rust --no-pager -n 50`
-- Verify the config is valid JSON: `jq . /etc/shadowsocks-rust/config.json`
-- Make sure v2ray-plugin is in PATH: `which v2ray-plugin`
-
-### Can connect but no internet access
-
-- The server may need IP forwarding and NAT. This is usually already configured on VPS providers, but if not:
+- Server may need IP forwarding:
 
 ```bash
 echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
@@ -254,28 +202,27 @@ sysctl -p
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 ```
 
-Replace `eth0` with your server's main network interface (check with `ip route show default`).
+Replace `eth0` with your interface (check with `ip route show default`).
 
-### Client connects but immediately disconnects
+### Client can't connect at all
 
-- Make sure the cipher on the client matches exactly: `chacha20-ietf-poly1305`
-- Make sure the password is copied exactly (no trailing spaces)
-- Verify the plugin options include `tls`, the correct `host`, and the correct `path`
+- Verify server IP is correct
+- Make sure port 443 is not blocked by firewall
+- Check UUID, public key, and short ID match exactly
+- Ensure flow is set to `xtls-rprx-vision`
+- Ensure fingerprint is set to `chrome`
 
 ## Security Notes
 
-- The config file at `/etc/shadowsocks-rust/config.json` is readable only by the `shadowsocks` user (mode 600).
-- ssserver runs as a dedicated `shadowsocks` system user with no login shell and no home directory.
-- ssserver only binds to `127.0.0.1` — it is not directly reachable from the internet. All external traffic goes through Caddy.
-- TLS certificates are automatically obtained and renewed by Caddy.
-- The script does **not** configure a firewall. You should set one up yourself (e.g., UFW) allowing ports 22, 80, and 443.
+- Config file at `/usr/local/etc/xray/config.json` is mode 600 (root only).
+- Xray runs as root (required for port 443 binding).
+- No TLS certificate stored on server — Reality impersonates the destination site.
+- The script does not configure a firewall. Set one up yourself (e.g., UFW) allowing ports 22 and 443.
 
 ## What Gets Installed
 
 | Component | Source | Location |
 |-----------|--------|----------|
-| shadowsocks-rust (`ssserver`) | [GitHub releases](https://github.com/shadowsocks/shadowsocks-rust/releases) | `/usr/local/bin/ssserver` |
-| v2ray-plugin | [GitHub releases](https://github.com/shadowsocks/v2ray-plugin/releases) | `/usr/local/bin/v2ray-plugin` |
-| Caddy | [Official apt repo](https://caddyserver.com/docs/install#debian-ubuntu-raspbian) | System package |
+| xray-core | [GitHub releases](https://github.com/XTLS/Xray-core/releases) | `/usr/local/bin/xray` |
 
-System packages installed: `curl`, `tar`, `jq`, `debian-keyring`, `debian-archive-keyring`, `apt-transport-https`.
+System packages installed: `curl`, `unzip`, `jq`.
