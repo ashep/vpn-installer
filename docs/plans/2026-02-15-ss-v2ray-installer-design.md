@@ -22,7 +22,7 @@ Browser --TLS--> Caddy:443 ---> static decoy page
 | Choice | Value |
 |--------|-------|
 | SS implementation | shadowsocks-rust (GitHub releases) |
-| Cipher | 2022-blake3-aes-128-gcm |
+| Cipher | chacha20-ietf-poly1305 |
 | TLS | Caddy (auto ACME) |
 | Credentials | Auto-generated |
 | Firewall | Not managed by script |

@@ -81,7 +81,7 @@ info "v2ray-plugin installed to /usr/local/bin/v2ray-plugin"
 
 # ── Generate credentials ────────────────────────────────────────────────────
 
-PASSWORD=$(openssl rand -base64 16)
+PASSWORD=$(openssl rand -base64 32)
 LOCAL_PORT=$(shuf -i 10000-60000 -n 1)
 WS_PATH="/ws-$(openssl rand -hex 8)"
 
@@ -100,7 +100,7 @@ cat > /etc/shadowsocks-rust/config.json <<EOF
     "server": "127.0.0.1",
     "server_port": ${LOCAL_PORT},
     "password": "${PASSWORD}",
-    "method": "2022-blake3-aes-128-gcm",
+    "method": "chacha20-ietf-poly1305",
     "plugin": "v2ray-plugin",
     "plugin_opts": "server;path=${WS_PATH}"
 }
@@ -194,7 +194,7 @@ info "Services started."
 # ── Print summary ────────────────────────────────────────────────────────────
 
 CLIENT_PLUGIN_OPTS="tls;host=${DOMAIN};path=${WS_PATH}"
-SS_USERINFO=$(python3 -c "import urllib.parse; print(urllib.parse.quote('2022-blake3-aes-128-gcm') + ':' + urllib.parse.quote('${PASSWORD}'))")
+SS_USERINFO=$(python3 -c "import urllib.parse; print(urllib.parse.quote('chacha20-ietf-poly1305') + ':' + urllib.parse.quote('${PASSWORD}'))")
 SS_URI="ss://${SS_USERINFO}@${DOMAIN}:443/?plugin=$(python3 -c "import urllib.parse; print(urllib.parse.quote('v2ray-plugin;${CLIENT_PLUGIN_OPTS}'))")#${DOMAIN}"
 
 echo ""
@@ -205,7 +205,7 @@ echo ""
 echo -e "  Server:       ${GREEN}${DOMAIN}${NC}"
 echo -e "  Port:         ${GREEN}443${NC}"
 echo -e "  Password:     ${GREEN}${PASSWORD}${NC}"
-echo -e "  Cipher:       ${GREEN}2022-blake3-aes-128-gcm${NC}"
+echo -e "  Cipher:       ${GREEN}chacha20-ietf-poly1305${NC}"
 echo -e "  Plugin:       ${GREEN}v2ray-plugin${NC}"
 echo -e "  Plugin opts:  ${GREEN}${CLIENT_PLUGIN_OPTS}${NC}"
 echo ""

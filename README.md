@@ -13,7 +13,7 @@ Browser ──TLS──▶ Caddy (:443) ──▶ static decoy page
 
 - **Caddy** listens on port 443, terminates TLS (automatic Let's Encrypt), and serves a static "Under Construction" page to regular visitors.
 - Requests to a secret randomized websocket path are proxied to **ssserver** on localhost.
-- **ssserver** (shadowsocks-rust) handles the SOCKS5 proxy with the `2022-blake3-aes-128-gcm` cipher (Shadowsocks 2022 protocol).
+- **ssserver** (shadowsocks-rust) handles the SOCKS5 proxy with the `chacha20-ietf-poly1305` cipher (Shadowsocks 2022 protocol).
 - **v2ray-plugin** provides the websocket transport layer between client and server.
 
 Anyone inspecting the server sees a valid HTTPS website. The proxy traffic blends in as normal websocket connections.
@@ -76,7 +76,7 @@ At the end, the script prints everything you need to configure your client:
   Server:       proxy.example.com
   Port:         443
   Password:     <random base64 string>
-  Cipher:       2022-blake3-aes-128-gcm
+  Cipher:       chacha20-ietf-poly1305
   Plugin:       v2ray-plugin
   Plugin opts:  tls;host=proxy.example.com;path=/ws-<random>
 
@@ -111,7 +111,7 @@ If your client doesn't support `ss://` URI import, enter these settings manually
 | Server | Your domain (e.g., `proxy.example.com`) |
 | Port | `443` |
 | Password | The password from the installer output |
-| Cipher / Encryption | `2022-blake3-aes-128-gcm` |
+| Cipher / Encryption | `chacha20-ietf-poly1305` |
 | Plugin | `v2ray-plugin` |
 | Plugin Options | `tls;host=<your-domain>;path=<your-ws-path>` |
 
@@ -128,7 +128,7 @@ cat > ~/ss-local.json <<EOF
     "local_address": "127.0.0.1",
     "local_port": 1080,
     "password": "YOUR_PASSWORD_HERE",
-    "method": "2022-blake3-aes-128-gcm",
+    "method": "chacha20-ietf-poly1305",
     "plugin": "v2ray-plugin",
     "plugin_opts": "tls;host=proxy.example.com;path=/ws-YOUR_PATH_HERE"
 }
@@ -173,8 +173,8 @@ systemctl stop caddy
 ### Changing the password
 
 ```bash
-# Generate a new 16-byte base64 password (required format for 2022-blake3-aes-128-gcm)
-NEW_PASS=$(openssl rand -base64 16)
+# Generate a new random password
+NEW_PASS=$(openssl rand -base64 32)
 echo "New password: $NEW_PASS"
 
 # Edit the config
@@ -225,7 +225,7 @@ Replace `eth0` with your server's main network interface (check with `ip route s
 
 ### Client connects but immediately disconnects
 
-- Make sure the cipher on the client matches exactly: `2022-blake3-aes-128-gcm`
+- Make sure the cipher on the client matches exactly: `chacha20-ietf-poly1305`
 - Make sure the password is copied exactly (no trailing spaces)
 - Verify the plugin options include `tls`, the correct `host`, and the correct `path`
 
