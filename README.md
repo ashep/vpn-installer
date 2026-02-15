@@ -161,6 +161,39 @@ systemctl stop shadowsocks-rust
 systemctl stop caddy
 ```
 
+### Verifying the server is working
+
+After installation, run these checks on the server to confirm everything is healthy:
+
+```bash
+# 1. Check that both services are active
+systemctl is-active shadowsocks-rust  # should print "active"
+systemctl is-active caddy              # should print "active"
+
+# 2. Verify ssserver is listening on the local port
+ss -tlnp | grep ssserver
+# Expected: LISTEN on 127.0.0.1:<your-port>
+
+# 3. Verify Caddy is listening on 443
+ss -tlnp | grep caddy
+# Expected: LISTEN on *:443 (and *:80 for ACME)
+
+# 4. Test the decoy page (should return your "Under Construction" HTML)
+curl -s https://yourdomain.com | head -5
+
+# 5. Test the websocket path (should return a 502 or connection upgrade, NOT a 404)
+curl -s -o /dev/null -w "%{http_code}" https://yourdomain.com/ws-your-path
+# Expected: 502 (because curl is not a websocket client — 502 means Caddy
+# found the route and tried to proxy it, which is correct. A 404 would
+# mean the path is wrong.)
+
+# 6. Test TLS certificate validity
+curl -vI https://yourdomain.com 2>&1 | grep "subject:"
+# Should show your domain name with a valid Let's Encrypt certificate
+```
+
+Replace `yourdomain.com` and `/ws-your-path` with your actual values from the installer output.
+
 ### Configuration files
 
 | File | Purpose |
