@@ -40,11 +40,17 @@ dig +short proxy.example.com
 
 ### 2. Run the installer
 
-```bash
-# Copy the script to your server
-scp install.sh root@your-server:~
+The quickest way — run it directly on the server without downloading anything first:
 
-# SSH in and run it
+```bash
+ssh root@your-server
+bash <(curl -fsSL https://raw.githubusercontent.com/ashep/vpn-installer/main/install.sh)
+```
+
+Alternatively, download and run it in two steps:
+
+```bash
+scp install.sh root@your-server:~
 ssh root@your-server
 bash install.sh
 ```
