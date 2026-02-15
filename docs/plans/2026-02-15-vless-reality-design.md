@@ -44,7 +44,7 @@ Reality solves all three:
 |--------|-------|--------|
 | Protocol | VLESS | Required for Reality transport |
 | Transport | TCP + Reality | Best anti-detection against Russian DPI |
-| Flow | xtls-rpc-vision | Prevents length-based traffic analysis |
+| Flow | xtls-rprx-vision | Prevents length-based traffic analysis |
 | Dest site | www.microsoft.com | TLS 1.3, H2, not blocked in Russia, consistent behavior |
 | Port | 443 | Standard HTTPS, expected by DPI |
 | Domain | Not required | Reality connects by server IP |
@@ -59,7 +59,7 @@ Reality solves all three:
     "port": 443,
     "protocol": "vless",
     "settings": {
-      "clients": [{ "id": "<UUID>", "flow": "xtls-rpc-vision" }],
+      "clients": [{ "id": "<UUID>", "flow": "xtls-rprx-vision" }],
       "decryption": "none"
     },
     "streamSettings": {
@@ -80,7 +80,7 @@ Reality solves all three:
 ## Share link format
 
 ```
-vless://<UUID>@<SERVER_IP>:443?encryption=none&flow=xtls-rpc-vision&type=tcp&security=reality&sni=www.microsoft.com&fp=chrome&pbk=<PUBLIC_KEY>&sid=<SHORT_ID>#<label>
+vless://<UUID>@<SERVER_IP>:443?encryption=none&flow=xtls-rprx-vision&type=tcp&security=reality&sni=www.microsoft.com&fp=chrome&pbk=<PUBLIC_KEY>&sid=<SHORT_ID>#<label>
 ```
 
 Compatible with: V2rayNG, Nekoray, Streisand, Shadowrocket, V2Box, V2rayN.

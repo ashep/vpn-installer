@@ -172,7 +172,7 @@ cat > /usr/local/etc/xray/config.json <<EOF
                 "clients": [
                     {
                         "id": "${UUID}",
-                        "flow": "xtls-rpc-vision"
+                        "flow": "xtls-rprx-vision"
                     }
                 ],
                 "decryption": "none"
@@ -257,7 +257,7 @@ git commit -m "Add xray config, systemd service, and service start"
 ```bash
 # ── Print summary ────────────────────────────────────────────────────────────
 
-VLESS_LINK="vless://${UUID}@${SERVER_IP}:443?encryption=none&flow=xtls-rpc-vision&type=tcp&security=reality&sni=${DEST}&fp=chrome&pbk=${PUBLIC_KEY}&sid=${SHORT_ID}#vless-reality"
+VLESS_LINK="vless://${UUID}@${SERVER_IP}:443?encryption=none&flow=xtls-rprx-vision&type=tcp&security=reality&sni=${DEST}&fp=chrome&pbk=${PUBLIC_KEY}&sid=${SHORT_ID}#vless-reality"
 
 echo ""
 echo -e "${CYAN}════════════════════════════════════════════════════════════${NC}"
@@ -268,7 +268,7 @@ echo -e "  Server IP:    ${GREEN}${SERVER_IP}${NC}"
 echo -e "  Port:         ${GREEN}443${NC}"
 echo -e "  Protocol:     ${GREEN}VLESS${NC}"
 echo -e "  UUID:         ${GREEN}${UUID}${NC}"
-echo -e "  Flow:         ${GREEN}xtls-rpc-vision${NC}"
+echo -e "  Flow:         ${GREEN}xtls-rprx-vision${NC}"
 echo -e "  Security:     ${GREEN}Reality${NC}"
 echo -e "  SNI:          ${GREEN}${DEST}${NC}"
 echo -e "  Public Key:   ${GREEN}${PUBLIC_KEY}${NC}"
