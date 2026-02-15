@@ -60,8 +60,8 @@ info "xray installed to /usr/local/bin/xray"
 info "Generating credentials..."
 UUID=$(/usr/local/bin/xray uuid)
 KEY_PAIR=$(/usr/local/bin/xray x25519)
-PRIVATE_KEY=$(echo "$KEY_PAIR" | grep "Private key:" | awk '{print $3}')
-PUBLIC_KEY=$(echo "$KEY_PAIR" | grep "Public key:" | awk '{print $3}')
+PRIVATE_KEY=$(echo "$KEY_PAIR" | awk '/PrivateKey:|Private key:/ {print $2}')
+PUBLIC_KEY=$(echo "$KEY_PAIR" | awk '/Password:|Public key:/ {print $2}')
 SHORT_ID=$(openssl rand -hex 4)
 
 DEST="www.microsoft.com"
