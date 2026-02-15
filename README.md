@@ -194,15 +194,10 @@ Re-run the installer. It will download the latest version and regenerate credent
 
 ### Client connects but no internet
 
-- Server may need IP forwarding:
-
-```bash
-echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
-sysctl -p
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-```
-
-Replace `eth0` with your interface (check with `ip route show default`).
+- Check xray logs for errors: `journalctl -u xray --no-pager -n 50`
+- Verify DNS works on the server: `dig example.com`
+- Make sure the server itself has internet access: `curl -I https://example.com`
+- Some networks block outgoing traffic from VPS — check with your hosting provider
 
 ### Client can't connect at all
 

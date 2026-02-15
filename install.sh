@@ -28,6 +28,13 @@ case "$(uname -m)" in
     *)       error "Unsupported architecture: $(uname -m)" ;;
 esac
 
+if [[ -f /usr/local/etc/xray/config.json ]]; then
+    warn "Existing xray config found. Re-running will regenerate all credentials."
+    warn "All connected clients will need to be reconfigured."
+    read -rp "Continue? [y/N] " REPLY
+    [[ "$REPLY" =~ ^[Yy]$ ]] || exit 0
+fi
+
 # ── Install dependencies ────────────────────────────────────────────────────
 
 info "Installing base packages..."
