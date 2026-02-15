@@ -134,29 +134,62 @@ cat > /var/www/html/index.html <<'HTMLEOF'
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome</title>
+    <title>Daniel Morgan</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: Georgia, "Times New Roman", serif;
+            min-height: 100vh; background: #fafaf8; color: #2c2c2c;
+            display: flex; justify-content: center;
+            padding: 4rem 1.5rem;
+        }
+        .page { max-width: 600px; width: 100%; }
+        .avatar {
+            width: 88px; height: 88px; border-radius: 50%;
+            background: #b8c4b8; margin-bottom: 1.5rem;
             display: flex; align-items: center; justify-content: center;
-            min-height: 100vh;
-            background: #f5f5f5; color: #333;
+            font-size: 2rem; color: #fff; font-family: sans-serif;
         }
-        .card {
-            text-align: center; padding: 3rem 2rem;
-            background: #fff; border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            max-width: 480px;
+        h1 { font-size: 1.6rem; font-weight: 600; margin-bottom: 0.3rem; }
+        .subtitle { color: #777; font-size: 0.95rem; margin-bottom: 2rem; }
+        .bio {
+            line-height: 1.75; color: #444; margin-bottom: 2.5rem;
+            font-size: 0.95rem;
         }
-        h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
-        p  { color: #777; font-size: 0.95rem; }
+        .bio p { margin-bottom: 1rem; }
+        .links { list-style: none; }
+        .links li { margin-bottom: 0.6rem; }
+        .links a {
+            color: #4a6741; text-decoration: none;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 1px; font-size: 0.95rem;
+        }
+        .links a:hover { border-color: #4a6741; }
+        footer {
+            margin-top: 3rem; padding-top: 1.5rem;
+            border-top: 1px solid #e8e8e4;
+            color: #aaa; font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>Under Construction</h1>
-        <p>We're working on something new. Check back soon.</p>
+    <div class="page">
+        <div class="avatar">DM</div>
+        <h1>Daniel Morgan</h1>
+        <p class="subtitle">Landscape photographer &amp; occasional writer</p>
+        <div class="bio">
+            <p>I spend most of my time outdoors with a camera, chasing light
+            across mountain ridges and quiet valleys. Based in Colorado,
+            though rarely home for long.</p>
+            <p>Sometimes I write about the places I visit and the people I
+            meet along the way. Nothing fancy, just notes from the road.</p>
+        </div>
+        <ul class="links">
+            <li><a href="#">Selected photographs</a></li>
+            <li><a href="#">Travel notes</a></li>
+            <li><a href="#">Get in touch</a></li>
+        </ul>
+        <footer>&copy; 2025 Daniel Morgan</footer>
     </div>
 </body>
 </html>
