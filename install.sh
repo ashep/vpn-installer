@@ -29,10 +29,8 @@ case "$(uname -m)" in
 esac
 
 if [[ -f /usr/local/etc/xray/config.json ]]; then
-    warn "Existing xray config found. Re-running will regenerate all credentials."
+    warn "Existing xray config found. Credentials will be regenerated."
     warn "All connected clients will need to be reconfigured."
-    read -rp "Continue? [y/N] " REPLY
-    [[ "$REPLY" =~ ^[Yy]$ ]] || exit 0
 fi
 
 # ── Install dependencies ────────────────────────────────────────────────────
@@ -64,7 +62,8 @@ PRIVATE_KEY=$(echo "$KEY_PAIR" | awk '/PrivateKey:|Private key:/ {print $2}')
 PUBLIC_KEY=$(echo "$KEY_PAIR" | awk '/Password:|Public key:/ {print $2}')
 SHORT_ID=$(openssl rand -hex 4)
 
-DEST="www.microsoft.com"
+read -rp "SNI destination domain [nhk.or.jp]: " DEST
+DEST="${DEST:-nhk.or.jp}"
 SERVER_IP=$(curl -fsSL https://ifconfig.me)
 
 # ── Write xray config ──────────────────────────────────────────────────────
