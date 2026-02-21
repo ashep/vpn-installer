@@ -62,9 +62,9 @@ PRIVATE_KEY=$(echo "$KEY_PAIR" | awk '/PrivateKey:|Private key:/ {print $2}')
 PUBLIC_KEY=$(echo "$KEY_PAIR" | awk '/Password:|Public key:/ {print $2}')
 SHORT_ID=$(openssl rand -hex 4)
 
-read -rp "SNI destination domain [nhk.or.jp]: " DEST
-DEST="${DEST:-nhk.or.jp}"
-SERVER_IP=$(curl -fsSL https://ifconfig.me)
+read -rp "SNI destination domain [twitch.tv]: " DEST
+DEST="${DEST:-twitch.tv}"
+SERVER_IP=$(curl -fsSL -4 https://ifconfig.me)
 
 # ── Write xray config ──────────────────────────────────────────────────────
 
